@@ -1,101 +1,205 @@
 /**
- * みつばち日記 (iOS Notes Connect - 設定レス版)
+ * みつばち日記カード - コアロジック
  */
 
-// 日付の自動設定
-const today = new Date();
-const dateString = `${today.getFullYear()}年${today.getMonth() + 1}月${today.getDate()}日`;
-document.getElementById('currentDate').textContent = dateString;
+const storageKey = 'kame_honey_diary_book';
+let phrases = JSON.parse(localStorage.getItem(storageKey)) || []; // 変数名は既存資産に準拠
 
-const saveBtn = document.getElementById('saveBtn');
-const historyList = document.getElementById('historyList');
+// DOM要素のバインド
+const inputTitle = document.getElementById('input-title');
+const inputContent = document.getElementById('input-content');
+const inputAction = document.getElementById('input-action');
+const saveBtn = document.getElementById('save-btn');
+const listContainer = document.getElementById('diary-list-container');
+const toast = document.getElementById('toast');
 
-// アプリ起動時にLocal Storageからバックアップ履歴を読み込む
-window.addEventListener('DOMContentLoaded', () => {
-    loadLogs();
-});
+const captureStage = document.getElementById('capture-stage');
+const captureDate = document.getElementById('capture-date');
+const captureTitle = document.getElementById('capture-title');
+const captureContent = document.getElementById('capture-content');
+const captureAction = document.getElementById('capture-action');
 
-// ボタンを押した時のメイン処理
-saveBtn.addEventListener('click', () => {
-    const g1 = document.getElementById('good1').value.trim();
-    const g2 = document.getElementById('good2').value.trim();
-    const g3 = document.getElementById('good3').value.trim();
+/**
+ * 画面下部にメッセージ通知を表示する関数
+ */
+function showToast(message) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 2500);
+}
 
-    if (!g1 && !g2 && !g3) {
-        alert('どれか一つでも入力してみてくださいね。');
-        return;
+/**
+ * 隠しステージの文字要素を更新する関数
+ */
+function prepareCaptureStage(date, title, content, action) {
+    captureDate.textContent = date;
+    captureTitle.textContent = title;
+    captureContent.textContent = content;
+    if (action) {
+        captureAction.textContent = `🎯 次への目標: ${action}`;
+        captureAction.style.display = 'block';
+    } else {
+        captureAction.style.display = 'none';
     }
+}
 
-    // 1. アプリ内（Local Storage）への保存処理
-    const log = {
-        id: Date.now(),
-        date: dateString,
-        goods: [g1, g2, g3].filter(Boolean)
-    };
-
-    let logs = JSON.parse(localStorage.getItem('threeGoodThingsIos')) || [];
-    // 同一日の重複を上書き回避するためにフィルタリング
-    logs = logs.filter(item => item.date !== dateString); 
-    logs.unshift(log); 
-    localStorage.setItem('threeGoodThingsIos', JSON.stringify(logs));
-
-    // 2. コピー用テキストの生成
-    let todayText = `🐝 ${dateString}\n`;
-    log.goods.forEach((item, index) => {
-        todayText += `  ${index + 1}. ${item}\n`;
-    });
-    todayText += `\n`; // 次回、追記ペーストしやすいように末尾に改行を入れる
-
-    // 3. クリップボードへ書き込み＆iPhoneメモアプリの直接起動
-    navigator.clipboard.writeText(todayText).then(() => {
-        // 入力フォームのクリアと履歴の再描画
-        document.getElementById('good1').value = '';
-        document.getElementById('good2').value = '';
-        document.getElementById('good3').value = '';
-        loadLogs();
-
-        // ユーザーへの通知とiOSメモアプリの立ち上げ
-        alert('今日の日記をコピーしました！\nメモアプリが開いたら、お好きなノートの末尾に「ペースト（貼り付け）」してください。');
-        
-        // 特殊なURLスキームでiPhoneのメモアプリを直接起動
-        window.location.href = "mobilenotes://"; 
-    }).catch(err => {
-        alert('クリップボードへのコピーに失敗しました。Safariブラウザでお試しください。');
-        console.error('Clipboard error:', err);
-    });
-});
-
-// 履歴データを画面に描画する処理
-function loadLogs() {
-    const logs = JSON.parse(localStorage.getItem('threeGoodThingsIos')) || [];
-    historyList.innerHTML = '';
-
-    if (logs.length === 0) {
-        historyList.innerHTML = '<p class="empty-message">まだ集めた蜜がありません。今日の終わりに最初の一歩を記録してみましょう。</p>';
-        return;
-    }
-
-    logs.forEach(log => {
-        const card = document.createElement('div');
-        card.className = 'card log-card';
-        let listItems = log.goods.map(item => `<li>🍯 ${item}</li>`).join('');
-        card.innerHTML = `
-            <div class="log-header">
-                <span class="log-date">${log.date}</span>
-                <button class="delete-btn" onclick="deleteLog(${log.id})">削除</button>
-            </div>
-            <ul class="log-body">${listItems}</ul>
-        `;
-        historyList.appendChild(card);
+/**
+ * html2canvasを動かしてBlob（画像データ）を取得する関数
+ */
+function generateCardBlob() {
+    return html2canvas(captureStage.querySelector('.capture-card'), {
+        backgroundColor: null,
+        scale: 2,
+        useCORS: true // 外部フォントや画像ズレを防止
+    }).then(canvas => {
+        return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     });
 }
 
-// 履歴の削除処理
-window.deleteLog = function(id) {
-    if (confirm('この日の記録をアプリから削除しますか？（メモアプリ側の内容は削除されません）')) {
-        let logs = JSON.parse(localStorage.getItem('threeGoodThingsIos')) || [];
-        logs = logs.filter(log => log.id !== id);
-        localStorage.setItem('threeGoodThingsIos', JSON.stringify(logs));
-        loadLogs();
+/**
+ * メモアプリへのURLスキーム切り替え
+ */
+function openMemoApp() {
+    const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+    if (/iPad|iPhone|iPod/.test(userAgent) && !window.MSStream) {
+        window.location.href = "mobilenotes://";
+    } else if (/Android/.test(userAgent)) {
+        window.location.href = "https://keep.google.com/";
+    } else {
+        showToast('📸 クリップボードに日記画像を格納しました！Ctrl+Vで貼り付けられます');
+    }
+}
+
+/**
+ * 【超重要】セキュリティ制限をバイパスする高速コピー関数
+ */
+async function copyAsImageAndLaunch() {
+    if (!navigator.clipboard || !window.ClipboardItem) {
+        showToast('❌ お使いのブラウザは画像コピーに対応していません。最新のSafariやChromeでお試しください。');
+        return;
+    }
+
+    showToast('✨ 日記カードを作成中...');
+
+    try {
+        // iOS/Safariの制約を突破するため、先にコンストラクタを作り中で画像生成を待機させる
+        await navigator.clipboard.write([
+            new window.ClipboardItem({
+                "image/png": (async () => {
+                    const blob = await generateCardBlob();
+                    if (!blob) throw new Error("Blob generation failed");
+                    return blob;
+                })()
+            })
+        ]);
+
+        showToast('📸 日記カードをコピー！メモ帳が開きます');
+        setTimeout(openMemoApp, 600);
+
+    } catch (err) {
+        console.error('Clipboard Error:', err);
+        showToast('❌ コピーに失敗。HTTPS環境（GitHub Pages上）で実行しているかご確認ください。');
+    }
+}
+
+/**
+ * 登録データを画面に再描画する関数
+ */
+function renderPhrases() {
+    listContainer.innerHTML = '';
+    if (phrases.length === 0) {
+        listContainer.innerHTML = '<div class="empty-state">ストックされた日記はまだありません。</div>';
+        return;
+    }
+
+    // 最新の記録が最上位に表示されるよう逆順ループ
+    phrases.slice().reverse().forEach((item, index) => {
+        const actualIndex = phrases.length - 1 - index;
+        const card = document.createElement('div');
+        card.className = 'diary-card';
+        
+        const actionHtml = item.memo ? `<div class="diary-item-action">🎯 次への目標: ${escapeHtml(item.memo)}</div>` : '';
+
+        card.innerHTML = `
+            <div class="diary-item-date">📅 ${escapeHtml(item.date || '')}</div>
+            <div class="diary-item-title">${escapeHtml(item.en)}</div>
+            <div class="diary-item-content">${escapeHtml(item.ja)}</div>
+            ${actionHtml}
+            <div class="card-actions">
+                <button class="action-btn btn-copy" onclick="triggerManualCapture(${actualIndex})">📸 カードを再コピー</button>
+                <button class="action-btn btn-delete" onclick="deletePhrase(${actualIndex})">削除</button>
+            </div>
+        `;
+        listContainer.appendChild(card);
+    });
+}
+
+// 記録ボタンのイベントリスナー
+saveBtn.addEventListener('click', () => {
+    const titleText = inputTitle.value.trim();
+    const contentText = inputContent.value.trim();
+    const actionText = inputAction.value.trim();
+
+    if (!titleText || !contentText) {
+        showToast('⚠️ タイトルと日記本文を入力してください');
+        return;
+    }
+
+    // 今日付を自動生成（YYYY/MM/DD 形式）
+    const now = new Date();
+    const dateText = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
+
+    // 既存のキー構造を壊さないようにマッピングして保存
+    // en -> タイトル, ja -> 本文, memo -> アクション, date -> 日付
+    phrases.push({ 
+        en: titleText, 
+        ja: contentText, 
+        memo: actionText,
+        date: dateText
+    });
+    localStorage.setItem(storageKey, JSON.stringify(phrases));
+
+    // 画像化ステージの文字情報を更新
+    prepareCaptureStage(dateText, titleText, contentText, actionText);
+
+    // フォームのクリア
+    inputTitle.value = '';
+    inputContent.value = '';
+    inputAction.value = '';
+    renderPhrases();
+
+    // 強固な画像コピー＆アプリ起動
+    copyAsImageAndLaunch();
+});
+
+/**
+ * アイテム削除処理
+ */
+window.deletePhrase = function(index) {
+    if (confirm('この日記を削除しますか？')) {
+        phrases.splice(index, 1);
+        localStorage.setItem(storageKey, JSON.stringify(phrases));
+        renderPhrases();
+        showToast('🗑️ 削除しました');
     }
 };
+
+/**
+ * 過去アイテムの再画像化およびコピー起動
+ */
+window.triggerManualCapture = function(index) {
+    const item = phrases[index];
+    prepareCaptureStage(item.date || '', item.en, item.ja, item.memo);
+    copyAsImageAndLaunch();
+};
+
+/**
+ * エスケープ処理
+ */
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
+}
+
+// 起動時レンダリング
+renderPhrases();
