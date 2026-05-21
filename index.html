@@ -3,71 +3,79 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>みつばち日記 | おしえてかめさん</title>
+    <title>みつばち日記カード | おしえてかめさん</title>
     
-    <!-- iPhoneホーム画面追加用の設定 -->
+    <!-- スマホのホーム画面ショートカット・PWA設定 -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="みつばち日記">
     <link rel="apple-touch-icon" href="IMG_4277.png">
-    
+
     <link rel="stylesheet" href="style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Noto+Sans+JP:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Kiwi+Maru:wght@400;500&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- HTML要素を画像化するためのライブラリ（CDN経由） -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 </head>
 <body>
 
     <header>
         <div class="header-container">
-            <h1>🌙 みつばち日記</h1>
-            <p class="subtitle">みつばちのように、日常の小さな「蜜」を集めよう</p>
+            <h1>🐝 みつばち日記カード</h1>
+            <p class="subtitle">日々の学びや気づきを可愛いカードにして、メモ帳に残そう</p>
         </div>
     </header>
 
     <main class="container">
-        <!-- 入力エリア（設定不要でここからスタートできます） -->
+        <!-- 日記入力フォーム -->
         <section class="card input-section">
-            <h2 class="date-today" id="currentDate">2026年5月21日</h2>
-            <p class="guide-text">どんなに小さなことでも大丈夫。今日集めた3つの蜜（良いこと）を教えてください。</p>
+            <h3>📝 本日の日記を記録</h3>
             
-            <div class="input-group">
-                <span class="number">1.</span>
-                <input type="text" id="good1" placeholder="例：お気に入りのカフェに行けた" autocorrect="off" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <span class="number">2.</span>
-                <input type="text" id="good2" placeholder="例：欲しかった本を買った" autocorrect="off" autocomplete="off">
-            </div>
-            <div class="input-group">
-                <span class="number">3.</span>
-                <input type="text" id="good3" placeholder="例：お風呂にゆっくり浸かれた" autocorrect="off" autocomplete="off">
+            <div class="form-group">
+                <label for="input-title">タイトル / 本日のテーマ</label>
+                <input type="text" id="input-title" placeholder="例: 初めての夜勤帯を終えて / 今日の学び" autocomplete="off">
             </div>
 
-            <button id="saveBtn" class="btn btn-primary">今日の日記をコピーしてメモを開く</button>
+            <div class="form-group">
+                <label for="input-content">今日のできごと・気づき</label>
+                <textarea id="input-content" rows="4" placeholder="例: 先輩の動きを見て、事前の準備がいかに大切か分かりました。タイムスケジュールを意識して動けました！"></textarea>
+            </div>
+
+            <div class="form-group">
+                <label for="input-action">次へのアクション・ひとこと</label>
+                <input type="text" id="input-action" placeholder="例: 明日は次の行動を先読みして、10分前行動を意識する！" autocomplete="off">
+            </div>
+
+            <button id="save-btn" class="btn btn-primary">日記カードを作成してメモ帳を開く</button>
         </section>
 
-        <!-- 使い方ガイド -->
-        <section class="card guide-card">
-            <h3>💡 かんたん3ステップの使い方</h3>
-            <ol class="usage-list">
-                <li>3つの良いことを入力して、上の<strong>黄色いボタン</strong>を押します。</li>
-                <li>自動的にiPhoneの「メモ」アプリがパッと起動します。</li>
-                <li>お好きなノート（または新規ノート）を開き、画面をタップして<strong>「ペースト（貼り付け）」</strong>するだけで蓄積完了！</li>
-            </ol>
-        </section>
-
-        <!-- 振り返りエリア -->
+        <!-- 過去の日記履歴一覧 -->
         <section class="history-section">
-            <h2>アプリ内の「蜜」の履歴</h2>
-            <div id="historyList">
-                <!-- 過去の日記がここに挿入されます -->
+            <h2>🍯 アプリ内の日記ストック一覧</h2>
+            <div id="diary-list-container">
+                <!-- ここにJavaScriptで日記カードの履歴が挿入されます -->
             </div>
         </section>
     </main>
 
+    <!-- html2canvasで画像化するための一時的な隠しステージ -->
+    <div id="capture-stage">
+        <div class="capture-card">
+            <div class="capture-header">🐝 みつばち日記</div>
+            <div id="capture-date" class="capture-date"></div>
+            <div id="capture-title" class="capture-title"></div>
+            <div id="capture-content" class="capture-content"></div>
+            <div id="capture-action" class="capture-action"></div>
+        </div>
+    </div>
+
+    <!-- 通知ポップアップ（トースト） -->
+    <div id="toast" class="toast"></div>
+
     <footer>
-        <p>&copy; 2026 おしえてかめさん | 心を整えるWebツール</p>
+        <p>&copy; 2026 おしえてかめさん | 毎日の成長を応援する日記ツール</p>
     </footer>
 
     <script src="script.js"></script>
