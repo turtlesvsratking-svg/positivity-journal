@@ -56,17 +56,25 @@ header h1 {
     box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
 }
 
+.guide-card h3 {
+    font-size: 1rem;
+    margin-bottom: 10px;
+}
+
+.usage-list {
+    padding-left: 20px;
+    font-size: 0.85rem;
+    color: var(--text-color);
+}
+
+.usage-list li {
+    margin-bottom: 6px;
+}
+
 h2, h3 {
     color: var(--primary-color);
     margin-bottom: 12px;
     font-family: 'Kiwi Maru', serif;
-}
-
-.section-desc {
-    font-size: 0.8rem;
-    color: var(--text-muted);
-    margin-bottom: 15px;
-    line-height: 1.5;
 }
 
 .date-today {
@@ -125,15 +133,6 @@ h2, h3 {
     box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
 }
 .btn-primary:hover { background-color: var(--primary-hover); }
-
-.btn-outline {
-    background: none;
-    border: 1px solid var(--border-color);
-    color: var(--text-color);
-    font-size: 0.85rem;
-    padding: 8px;
-}
-.btn-outline:hover { background-color: var(--border-color); color: var(--primary-color); }
 
 .history-section h2 {
     font-size: 1.2rem;
