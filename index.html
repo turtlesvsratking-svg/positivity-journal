@@ -9,7 +9,6 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="みつばち日記">
-    <!-- アプリアイコンの指定（同じフォルダ内の画像を参照） -->
     <link rel="apple-touch-icon" href="IMG_4277.png">
     
     <link rel="stylesheet" href="style.css">
@@ -27,21 +26,7 @@
     </header>
 
     <main class="container">
-        <!-- 初期設定エリア -->
-        <section class="card config-section">
-            <h3>⚙️ 最初の1回だけ設定（iPhoneメモ連携）</h3>
-            <p class="section-desc">
-                1. iPhoneのメモアプリで「みつばち日記」というノートを新規作成します。<br>
-                2. ノート右上の共有ボタンから<strong>「リンクをコピー」</strong>を選択します。<br>
-                3. コピーしたURL（https://www.icloud.com/notes/...）を下に貼り付けて保存してください。
-            </p>
-            <div class="input-group">
-                <input type="text" id="noteUrlInput" placeholder="https://www.icloud.com/notes/...">
-            </div>
-            <button id="saveUrlBtn" class="btn btn-outline">iPhoneメモのリンクを保存する</button>
-        </section>
-
-        <!-- 入力エリア -->
+        <!-- 入力エリア（設定不要でここからスタートできます） -->
         <section class="card input-section">
             <h2 class="date-today" id="currentDate">2026年5月21日</h2>
             <p class="guide-text">どんなに小さなことでも大丈夫。今日集めた3つの蜜（良いこと）を教えてください。</p>
@@ -59,7 +44,17 @@
                 <input type="text" id="good3" placeholder="例：お風呂にゆっくり浸かれた" autocorrect="off" autocomplete="off">
             </div>
 
-            <button id="saveBtn" class="btn btn-primary">今日の日記をiPhoneメモに追記する</button>
+            <button id="saveBtn" class="btn btn-primary">今日の日記をコピーしてメモを開く</button>
+        </section>
+
+        <!-- 使い方ガイド -->
+        <section class="card guide-card">
+            <h3>💡 かんたん3ステップの使い方</h3>
+            <ol class="usage-list">
+                <li>3つの良いことを入力して、上の<strong>黄色いボタン</strong>を押します。</li>
+                <li>自動的にiPhoneの「メモ」アプリがパッと起動します。</li>
+                <li>お好きなノート（または新規ノート）を開き、画面をタップして<strong>「ペースト（貼り付け）」</strong>するだけで蓄積完了！</li>
+            </ol>
         </section>
 
         <!-- 振り返りエリア -->
@@ -75,7 +70,6 @@
         <p>&copy; 2026 おしえてかめさん | 心を整えるWebツール</p>
     </footer>
 
-    <!-- 独立したロジックファイルを読み込み -->
     <script src="script.js"></script>
 </body>
 </html>
