@@ -24,28 +24,28 @@
     <header>
         <div class="header-container">
             <h1>🐝 みつばち日記カード</h1>
-            <p class="subtitle">日々の学びや気づきを可愛いカードにして、メモ帳に残そう</p>
+            <p class="subtitle">今日の良かったことを3つ集めて、ハチミツ色のカードを作ろう</p>
         </div>
     </header>
 
     <main class="container">
         <!-- 日記入力フォーム -->
         <section class="card input-section">
-            <h3>📝 本日の日記を記録</h3>
+            <h3>🍯 今日の良かったことを3つ教えてね</h3>
             
             <div class="form-group">
-                <label for="input-title">タイトル / 本日のテーマ</label>
-                <input type="text" id="input-title" placeholder="例: 初めての夜勤帯を終えて / 今日の学び" autocomplete="off">
+                <label for="input-good1">1つめの良かったこと</label>
+                <input type="text" id="input-good1" placeholder="例: 朝ご飯のトーストが美味しく焼けた！" autocomplete="off">
             </div>
 
             <div class="form-group">
-                <label for="input-content">今日のできごと・気づき</label>
-                <textarea id="input-content" rows="4" placeholder="例: 先輩の動きを見て、事前の準備がいかに大切か分かりました。タイムスケジュールを意識して動けました！"></textarea>
+                <label for="input-good2">2つめの良かったこと</label>
+                <input type="text" id="input-good2" placeholder="例: 欲しかった本を本屋さんで見つけた" autocomplete="off">
             </div>
 
             <div class="form-group">
-                <label for="input-action">次へのアクション・ひとこと</label>
-                <input type="text" id="input-action" placeholder="例: 明日は次の行動を先読みして、10分前行動を意識する！" autocomplete="off">
+                <label for="input-good3">3つめの良かったこと</label>
+                <input type="text" id="input-good3" placeholder="例: 今日も1日、元気に笑顔で過ごせた" autocomplete="off">
             </div>
 
             <button id="save-btn" class="btn btn-primary">日記カードを作成してメモ帳を開く</button>
@@ -53,9 +53,9 @@
 
         <!-- 過去の日記履歴一覧 -->
         <section class="history-section">
-            <h2>🍯 アプリ内の日記ストック一覧</h2>
+            <h2>📦 アプリ内の日記ストック</h2>
             <div id="diary-list-container">
-                <!-- ここにJavaScriptで日記カードの履歴が挿入されます -->
+                <!-- ここにJavaScriptで日記の履歴が挿入されます -->
             </div>
         </section>
     </main>
@@ -63,11 +63,21 @@
     <!-- html2canvasで画像化するための一時的な隠しステージ -->
     <div id="capture-stage">
         <div class="capture-card">
-            <div class="capture-header">🐝 みつばち日記</div>
+            <div class="capture-header">🐝 今日の「良かったこと」日記</div>
             <div id="capture-date" class="capture-date"></div>
-            <div id="capture-title" class="capture-title"></div>
-            <div id="capture-content" class="capture-content"></div>
-            <div id="capture-action" class="capture-action"></div>
+            
+            <div class="capture-item">
+                <span class="honey-icon">🍯</span>
+                <div id="capture-good1" class="capture-text"></div>
+            </div>
+            <div class="capture-item">
+                <span class="honey-icon">🍯</span>
+                <div id="capture-good2" class="capture-text"></div>
+            </div>
+            <div class="capture-item">
+                <span class="honey-icon">🍯</span>
+                <div id="capture-good3" class="capture-text"></div>
+            </div>
         </div>
     </div>
 
@@ -75,7 +85,7 @@
     <div id="toast" class="toast"></div>
 
     <footer>
-        <p>&copy; 2026 おしえてかめさん | 毎日の成長を応援する日記ツール</p>
+        <p>&copy; 2026 おしえてかめさん | 小さな幸せを集める日記ツール</p>
     </footer>
 
     <script src="script.js"></script>
