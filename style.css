@@ -3,10 +3,10 @@
     --card-bg: #ffffff;
     --text-color: #2d3748;
     --text-muted: #718096;
-    --primary-color: #eab308;  /* みつばちイエロー */
-    --primary-hover: #ca8a04;
-    --accent-brown: #78350f;   /* ハニーブラウン（文字の引き締め用） */
-    --border-color: #e2e8f0;
+    --primary-color: #f59e0b;  /* ハニーイエロー */
+    --primary-hover: #d97706;
+    --accent-brown: #78350f;   /* ハニーブラウン */
+    --border-color: #fef08a;
 }
 
 * {
@@ -30,7 +30,7 @@ body {
 }
 
 header {
-    background: linear-gradient(135deg, #facc15, #ca8a04);
+    background: linear-gradient(135deg, #fbbf24, #d97706);
     color: var(--accent-brown);
     padding: 24px 16px;
     text-align: center;
@@ -38,7 +38,7 @@ header {
 }
 
 header h1 {
-    font-size: 1.6rem;
+    font-size: 1.5rem;
     font-family: 'Kiwi Maru', serif;
     margin-bottom: 4px;
     font-weight: 500;
@@ -47,23 +47,23 @@ header h1 {
 .subtitle {
     font-size: 0.85rem;
     font-weight: bold;
-    opacity: 0.85;
+    opacity: 0.9;
 }
 
 .card {
     background-color: var(--card-bg);
-    border: 2px solid #fef08a;
+    border: 2px solid var(--border-color);
     border-radius: 16px;
     padding: 20px;
     margin-bottom: 20px;
-    box-shadow: 0 4px 6px -1px rgba(139, 92, 26, 0.05);
+    box-shadow: 0 4px 6px -1px rgba(120, 53, 15, 0.04);
 }
 
 h3 {
-    font-size: 1.1rem;
+    font-size: 1.05rem;
     color: var(--accent-brown);
     margin-bottom: 16px;
-    border-bottom: 2px solid #fef08a;
+    border-bottom: 2px solid var(--border-color);
     padding-bottom: 6px;
     font-family: 'Kiwi Maru', serif;
 }
@@ -80,10 +80,10 @@ h3 {
     margin-bottom: 4px;
 }
 
-.form-group input, .form-group textarea {
+.form-group input {
     width: 100%;
     padding: 12px;
-    border: 1px solid var(--border-color);
+    border: 1px solid #cbd5e1;
     border-radius: 8px;
     font-size: 1rem;
     outline: none;
@@ -91,10 +91,10 @@ h3 {
     transition: border 0.2s;
 }
 
-.form-group input:focus, .form-group textarea:focus {
+.form-group input:focus {
     border-color: var(--primary-color);
     background-color: #fff;
-    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.15);
+    box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.15);
 }
 
 .btn {
@@ -124,53 +124,39 @@ h3 {
     transform: scale(0.98);
 }
 
-/* 履歴一覧のカードデザイン */
+/* 履歴一覧のスタイル */
 .diary-card {
     background-color: var(--card-bg);
-    border: 1px solid var(--border-color);
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
     padding: 16px;
     margin-bottom: 12px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.01);
 }
 
 .diary-item-date {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
     font-weight: bold;
-}
-
-.diary-item-title {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--accent-brown);
     margin-bottom: 6px;
 }
 
-.diary-item-content {
-    font-size: 0.95rem;
+.diary-list-ol {
+    padding-left: 20px;
+    margin-bottom: 10px;
     color: var(--text-color);
-    white-space: pre-wrap;
-    margin-bottom: 8px;
-    background-color: #fffbeb;
-    padding: 10px;
-    border-radius: 6px;
+    font-size: 0.95rem;
 }
 
-.diary-item-action {
-    font-size: 0.85rem;
-    color: #b45309;
-    font-weight: bold;
-    border-left: 3px solid var(--primary-color);
-    padding-left: 8px;
-    margin-bottom: 10px;
+.diary-list-ol li {
+    margin-bottom: 4px;
 }
 
 .card-actions {
     display: flex;
     justify-content: flex-end;
     gap: 8px;
-    border-top: 1px dashed var(--border-color);
+    border-top: 1px dashed #e2e8f0;
     padding-top: 10px;
 }
 
@@ -202,58 +188,50 @@ h3 {
 
 .capture-card {
     width: 380px;
-    padding: 24px;
+    padding: 26px;
     background: #ffffff;
-    border: 5px solid #facc15;
+    border: 5px solid #fbbf24;
     border-radius: 20px;
     font-family: 'Noto Sans JP', sans-serif;
     position: relative;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.05);
 }
 
 .capture-header {
     font-size: 0.8rem;
     color: var(--accent-brown);
     font-weight: bold;
-    letter-spacing: 0.05em;
-    margin-bottom: 2px;
+    letter-spacing: 0.03em;
 }
 
 .capture-date {
-    font-size: 0.75rem;
+    font-size: 0.8rem;
     color: var(--text-muted);
-    margin-bottom: 12px;
-    border-bottom: 2px dashed #facc15;
+    margin-bottom: 16px;
+    border-bottom: 2px dashed #fbbf24;
     padding-bottom: 6px;
 }
 
-.capture-title {
-    font-size: 1.3rem;
-    font-weight: 700;
-    color: var(--accent-brown);
+.capture-item {
+    display: flex;
+    align-items: flex-start;
     margin-bottom: 12px;
-    line-height: 1.4;
-}
-
-.capture-content {
-    font-size: 1rem;
-    color: #1f2937;
-    margin-bottom: 14px;
-    line-height: 1.6;
-    white-space: pre-wrap;
-    background: #fefdf0;
-    padding: 12px;
+    background: #fffbeb;
+    padding: 10px 12px;
     border-radius: 8px;
 }
 
-.capture-action {
-    font-size: 0.85rem;
-    color: #b45309;
-    font-weight: bold;
-    background-color: #fef3c7;
-    padding: 8px 12px;
-    border-radius: 6px;
-    border-left: 4px solid #eab308;
+.honey-icon {
+    font-size: 1.1rem;
+    margin-right: 8px;
+    line-height: 1.3;
+}
+
+.capture-text {
+    font-size: 0.95rem;
+    color: var(--accent-brown);
+    font-weight: 500;
+    line-height: 1.4;
+    flex: 1;
 }
 
 /* トースト通知 */
