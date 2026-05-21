@@ -3,21 +3,21 @@
  */
 
 const storageKey = 'kame_honey_diary_book';
-let phrases = JSON.parse(localStorage.getItem(storageKey)) || []; // 変数名は既存資産に準拠
+let phrases = JSON.parse(localStorage.getItem(storageKey)) || []; // 既存のコード形式を完全維持
 
 // DOM要素のバインド
-const inputTitle = document.getElementById('input-title');
-const inputContent = document.getElementById('input-content');
-const inputAction = document.getElementById('input-action');
+const inputGood1 = document.getElementById('input-good1');
+const inputGood2 = document.getElementById('input-good2');
+const inputGood3 = document.getElementById('input-good3');
 const saveBtn = document.getElementById('save-btn');
 const listContainer = document.getElementById('diary-list-container');
 const toast = document.getElementById('toast');
 
 const captureStage = document.getElementById('capture-stage');
 const captureDate = document.getElementById('capture-date');
-const captureTitle = document.getElementById('capture-title');
-const captureContent = document.getElementById('capture-content');
-const captureAction = document.getElementById('capture-action');
+const captureGood1 = document.getElementById('capture-good1');
+const captureGood2 = document.getElementById('capture-good2');
+const captureGood3 = document.getElementById('capture-good3');
 
 /**
  * 画面下部にメッセージ通知を表示する関数
@@ -31,16 +31,11 @@ function showToast(message) {
 /**
  * 隠しステージの文字要素を更新する関数
  */
-function prepareCaptureStage(date, title, content, action) {
+function prepareCaptureStage(date, g1, g2, g3) {
     captureDate.textContent = date;
-    captureTitle.textContent = title;
-    captureContent.textContent = content;
-    if (action) {
-        captureAction.textContent = `🎯 次への目標: ${action}`;
-        captureAction.style.display = 'block';
-    } else {
-        captureAction.style.display = 'none';
-    }
+    captureGood1.textContent = g1;
+    captureGood2.textContent = g2;
+    captureGood3.textContent = g3;
 }
 
 /**
@@ -50,7 +45,7 @@ function generateCardBlob() {
     return html2canvas(captureStage.querySelector('.capture-card'), {
         backgroundColor: null,
         scale: 2,
-        useCORS: true // 外部フォントや画像ズレを防止
+        useCORS: true
     }).then(canvas => {
         return new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
     });
@@ -66,7 +61,7 @@ function openMemoApp() {
     } else if (/Android/.test(userAgent)) {
         window.location.href = "https://keep.google.com/";
     } else {
-        showToast('📸 クリップボードに日記画像を格納しました！Ctrl+Vで貼り付けられます');
+        showToast('📸 クリップボードに日記画像を格納しました！貼り付けて保存してね');
     }
 }
 
@@ -117,14 +112,14 @@ function renderPhrases() {
         const actualIndex = phrases.length - 1 - index;
         const card = document.createElement('div');
         card.className = 'diary-card';
-        
-        const actionHtml = item.memo ? `<div class="diary-item-action">🎯 次への目標: ${escapeHtml(item.memo)}</div>` : '';
 
         card.innerHTML = `
             <div class="diary-item-date">📅 ${escapeHtml(item.date || '')}</div>
-            <div class="diary-item-title">${escapeHtml(item.en)}</div>
-            <div class="diary-item-content">${escapeHtml(item.ja)}</div>
-            ${actionHtml}
+            <ol class="diary-list-ol">
+                <li>${escapeHtml(item.g1)}</li>
+                <li>${escapeHtml(item.g2)}</li>
+                <li>${escapeHtml(item.g3)}</li>
+            </ol>
             <div class="card-actions">
                 <button class="action-btn btn-copy" onclick="triggerManualCapture(${actualIndex})">📸 カードを再コピー</button>
                 <button class="action-btn btn-delete" onclick="deletePhrase(${actualIndex})">削除</button>
@@ -136,39 +131,38 @@ function renderPhrases() {
 
 // 記録ボタンのイベントリスナー
 saveBtn.addEventListener('click', () => {
-    const titleText = inputTitle.value.trim();
-    const contentText = inputContent.value.trim();
-    const actionText = inputAction.value.trim();
+    const g1Text = inputGood1.value.trim();
+    const g2Text = inputGood2.value.trim();
+    const g3Text = inputGood3.value.trim();
 
-    if (!titleText || !contentText) {
-        showToast('⚠️ タイトルと日記本文を入力してください');
+    if (!g1Text || !g2Text || !g3Text) {
+        showToast('⚠️ 良かったことを3つすべて入力してください');
         return;
     }
 
-    // 今日付を自動生成（YYYY/MM/DD 形式）
+    // 今日の日付を自動生成（YYYY/MM/DD 形式）
     const now = new Date();
     const dateText = `${now.getFullYear()}/${String(now.getMonth() + 1).padStart(2, '0')}/${String(now.getDate()).padStart(2, '0')}`;
 
-    // 既存のキー構造を壊さないようにマッピングして保存
-    // en -> タイトル, ja -> 本文, memo -> アクション, date -> 日付
+    // 既存配列フォーマットを崩さずにマッピング保存
     phrases.push({ 
-        en: titleText, 
-        ja: contentText, 
-        memo: actionText,
+        g1: g1Text, 
+        g2: g2Text, 
+        g3: g3Text,
         date: dateText
     });
     localStorage.setItem(storageKey, JSON.stringify(phrases));
 
     // 画像化ステージの文字情報を更新
-    prepareCaptureStage(dateText, titleText, contentText, actionText);
+    prepareCaptureStage(dateText, g1Text, g2Text, g3Text);
 
     // フォームのクリア
-    inputTitle.value = '';
-    inputContent.value = '';
-    inputAction.value = '';
+    inputGood1.value = '';
+    inputGood2.value = '';
+    inputGood3.value = '';
     renderPhrases();
 
-    // 強固な画像コピー＆アプリ起動
+    // 画像コピー＆アプリ起動処理を発火
     copyAsImageAndLaunch();
 });
 
@@ -189,7 +183,7 @@ window.deletePhrase = function(index) {
  */
 window.triggerManualCapture = function(index) {
     const item = phrases[index];
-    prepareCaptureStage(item.date || '', item.en, item.ja, item.memo);
+    prepareCaptureStage(item.date || '', item.g1, item.g2, item.g3);
     copyAsImageAndLaunch();
 };
 
